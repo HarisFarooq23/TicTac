@@ -1,0 +1,165 @@
+ #include <iostream>
+#include <windows.h> // For adding sound effects
+#include <conio.h>   // For handling keyboard input
+
+using namespace std;
+
+//---------------------------------------------Global-----------------------------------
+char board[3][3] = { {'1', '2', '3'}, {'4', '5', '6'}, {'7', '8', '9'} };
+int currentPlayer = 1;
+char currentMarker;
+
+// Function to add a delay effect (for aesthetics)
+void delay(int milliseconds) {
+    Sleep(milliseconds);
+}
+
+// Function to print text in color (for beautification)
+void setColor(int color) {
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
+
+//--------------------------------------------Board set----------------------------------
+void drawBoard() {
+    system("cls"); // Clears the screen (for better visual effect)
+    setColor(11); // Set color to light blue
+    
+    
+    cout << "\n\033[1;36m Game Loaded Successfully!\033[0m\n";
+    setColor(15); // Reset to white
+    
+    for (int i = 0; i < 3; i++) {
+        cout << "\t\t\t"; // Center alignment
+        for (int j = 0; j < 3; j++) {
+            setColor(14); // Set color to yellow
+            cout << " " << board[i][j] << " ";
+            setColor(15); // Reset to white
+            if (j < 2) cout << "|";
+        }
+        cout << "\n";
+        if (i < 2) {
+            cout << "\t\t\t---|---|---\n";
+        }
+    }
+    cout << "\n";
+}
+
+//----------------------------------------Win checks-----------------------------------------
+bool checkWin() {
+    for (int i = 0; i < 3; i++) {
+        if (board[i][0] == board[i][1] && board[i][1] == board[i][2]) return true;
+        if (board[0][i] == board[1][i] && board[1][i] == board[2][i]) return true;
+    }
+    if (board[0][0] == board[1][1] && board[1][1] == board[2][2]) return true;
+    if (board[0][2] == board[1][1] && board[1][1] == board[2][0]) return true;
+    return false;
+}
+
+//---------------------------------------Draw checks------------------------------------------
+bool isDraw() {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (board[i][j] != 'X' && board[i][j] != 'O') return false;
+        }
+    }
+    return true;
+}
+
+//--------------------------------------Occupancy--------------------------------------------
+bool placeMarker(int slot) {
+    int row = (slot - 1) / 3;
+    int col = (slot - 1) % 3;
+    if (board[row][col] != 'X' && board[row][col] != 'O') {
+        board[row][col] = currentMarker;
+        return true;
+    }
+    return false;
+}
+
+//------------------------------------Swap---------------------------------------------------
+void swapPlayer() {
+    currentPlayer = (currentPlayer == 1) ? 2 : 1;
+    currentMarker = (currentMarker == 'X') ? 'O' : 'X';
+}
+
+//------------------------------------Game-----------------------------------------------------
+void playGame() {
+    setColor(10); // Set color to green
+   cout << "\t\t\t\t\t\033[1;34m*****************************************\033[0m\n";
+    cout << "\t\t\t\t\t\033[1;36m*                                       *\033[0m\n";
+    cout << "\t\t\t\t\t  \033[1;36m*     \033[1;33m WELCOME TO TICTAC GAME!  \033[1;36m    *\033[0m\n";
+    cout << "\t\t\t\t\t\033[1;36m*                                       *\033[0m\n";
+    cout << "\t\t\t\t\t\033[1;34m*****************************************\033[0m\n";
+
+   
+    
+    cout << "\n\033[1;36mLoading the game...\033[0m\n\n";
+    for (int i = 0; i < 10; i++) {
+        cout << "\033[1;36m*\033[0m";
+        cout.flush();
+Beep(300, 100);
+Beep(400, 100);
+Beep(500, 100);
+Beep(600, 100);
+Beep(700, 100);
+Beep(800, 200);
+
+
+        //_sleep(100); // Use this instead for Windows
+        // Beep(1200, 300);
+    }
+    setColor(15); // Reset to white
+    
+    cout << "\n\n\nPlayer 1, choose your marker (X or O): ";
+    cin >> currentMarker;
+    while (currentMarker != 'X' && currentMarker != 'O') {
+        cout << "Invalid choice. Choose X or O: ";
+        cin >> currentMarker;
+    }
+    drawBoard();
+
+    for (int turn = 0; turn < 9; turn++) {
+        int slot;
+        setColor(11); // Set color to pink for player's turn
+        cout << "Player " << currentPlayer << "'s turn. Enter slot (1-9): ";
+        setColor(15); // Reset to white
+        cin >> slot;
+
+        while (slot < 1 || slot > 9 || !placeMarker(slot)) {
+            setColor(12); // Set color to red for invalid move
+            cout << "Invalid move! Try again: ";
+            setColor(11); // Reset to white
+            cin >> slot;
+        }
+
+        drawBoard();
+
+        if (checkWin()) {
+            setColor(10); // Set color to green for win message
+            cout << "Player " << currentPlayer << " wins!\n";
+            setColor(15); // Reset to white
+          	 Beep(500, 150);
+             Beep(700, 150);
+			 Beep(900, 200);
+			 Beep(1100, 300); // Play a sound effect
+            return;
+        }
+
+        if (isDraw()) {
+            setColor(14); // Set color to yellow for draw message
+            cout << "It's a draw!\n";
+            setColor(15); // Reset to white
+            Beep(800, 300); // Play a different sound effect
+            return;
+        }
+
+        swapPlayer();
+    }
+}
+
+//---------------------------------Main------------------------------------------
+int main() {
+    playGame(); 
+    return 0;
+}
+
